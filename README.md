@@ -1,3 +1,60 @@
+#!/bin/bash
+
+echo "🔧 Atualizando sistema..."
+sudo apt update && sudo apt upgrade -y
+
+echo "🔧 Instalando dependências..."
+sudo apt install -y php php-cli php-mbstring php-xml php-bcmath php-curl php-zip unzip curl composer git mariadb-server nginx
+
+echo "🔧 Clonando o projeto..."
+git clone https://github.com/seu-usuario/seu-repositorio.git /var/www/html/seu-projeto
+cd /var/www/html/seu-projeto
+
+echo "🔧 Instalando pacotes do Laravel..."
+composer install
+
+echo "🔧 Criando arquivo .env..."
+cp .env.example .env
+
+echo "🔧 Configurando permissões..."
+sudo chown -R www-data:www-data /var/www/html/seu-projeto
+sudo chmod -R 775 /var/www/html/seu-projeto/storage /var/www/html/seu-projeto/bootstrap/cache
+
+echo "🔧 Criando banco de dados..."
+sudo mysql -e "CREATE DATABASE laravel_db;"
+sudo mysql -e "CREATE USER 'laravel_user'@'localhost' IDENTIFIED BY 'senha123';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON laravel_db.* TO 'laravel_user'@'localhost';"
+sudo mysql -e "FLUSH PRIVILEGES;"
+
+echo "🔧 Configurando .env..."
+sed -i 's/DB_DATABASE=laravel/DB_DATABASE=laravel_db/' .env
+sed -i 's/DB_USERNAME=root/DB_USERNAME=laravel_user/' .env
+sed -i 's/DB_PASSWORD=/DB_PASSWORD=senha123/' .env
+
+echo "🔧 Gerando key do Laravel..."
+php artisan key:generate
+
+echo "🔧 Rodando migrations..."
+php artisan migrate --force
+
+echo "🔧 Criando usuário administrador..."
+php artisan tinker <<EOF
+use App\Models\Administrador;
+Administrador::create([
+    'nome' => 'Admin',
+    'email' => 'admin@example.com',
+    'password' => bcrypt('senha123')
+]);
+EOF
+
+echo "✅ Instalação finalizada! Acesse seu projeto."
+
+wget https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/install.sh
+chmod +x install.sh
+./install.sh
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
