@@ -1,10 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Segunda Via')
-
-@section('content')
-<style>
-    * {
+* {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
@@ -66,19 +60,18 @@
     }
 
     .form-group label {
-    display: block;
-    font-size: 1rem;
-    margin-bottom: 10px; /* Adiciona espaço entre o label e o input */
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 5px;
     }
 
     .form-group input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #7d7d7d;
-    background: #333;
-    color: white;
-    font-size: 1rem;
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #7d7d7d;
+        background: #333;
+        color: white;
     }
 
     .form-group input::placeholder {
@@ -229,85 +222,3 @@
         gap: 20px;
         justify-content: center;
     }
-    </style>
-
-    <div class="interface">
-        <header>
-            <div class="logo">
-                <a href="{{ route('site.index') }}">
-                    <h1 class="logo-text">{{ $appName }}</h1>
-                </a>
-            </div><!--logo-->
-            <nav class="menu-desktop">
-                <ul>
-                    <li><a href="{{ route('site.index') }}">Início</a></li>
-                    <li><a href="{{ route('planos.show') }}">Plano</a></li>
-                    <li><a href="{{ route('sobre') }}">Sobre</a></li>
-                    <li><a href="{{ route ('segunda-via.index') }}">Segunda via</a></li>
-                </ul>
-            </nav>
-            <div class="btn-contato">
-                <a href="{{ route('site.contato') }}">
-                    <button>Contato</button>
-                </a>
-            </div><!--btn-contato-->
-        </header>
-
-        <main>
-            <section class="formulario-contato">
-                <div class="interface">
-                    <h1>Segunda Via</h1>
-                    <p>Digite seu CPF para consultar a segunda via do pagamento.</p>
-                    @if(session('error'))
-                        <p style="color: red;">{{ session('error') }}</p>
-                    @endif
-                    <form action="{{ route('segunda-via.consultar') }}" method="POST">
-                        @csrf
-                        <div class="form-group">
-                            <label for="cpf"></label>
-                            <input type="text" id="cpf" name="cpf" placeholder="Digite seu CPF" required>
-                        </div>
-                        <button type="submit" class="btn-submit">Consultar</button>
-                    </form>
-                </div>
-            </section>
-        </main>
-    </div>
-@endsection
-
-<script>
-    document.addEventListener("keydown", function (event) {
-        // Bloqueia Ctrl + U, Ctrl + Shift + I, Ctrl + C, Ctrl + X, Ctrl + S, F12 e outras teclas
-        if (
-            (event.ctrlKey && (event.key === "u" || event.key === "U")) || // Ctrl + U
-            (event.ctrlKey && (event.key === "i" || event.key === "I")) || // Ctrl + I
-            (event.ctrlKey && (event.shiftKey && (event.key === "i" || event.key === "I"))) || // Ctrl + Shift + I
-            (event.ctrlKey && (event.key === "c" || event.key === "C")) || // Ctrl + C
-            (event.ctrlKey && (event.key === "x" || event.key === "X")) || // Ctrl + X
-            (event.ctrlKey && (event.key === "s" || event.key === "S")) || // Ctrl + S
-            (event.key === "F12") // Tecla F12
-        ) {
-            event.preventDefault();
-            alert("Ação bloqueada!");
-        }
-    });
-
-    // Bloqueia o clique com o botão direito do mouse
-    document.addEventListener("contextmenu", function (event) {
-        event.preventDefault();
-        alert("O botão direito está desativado.");
-    });
-
-    // Bloqueia o arrastar de imagens (evita que sejam copiadas)
-    document.addEventListener("dragstart", function (event) {
-        if (event.target.tagName === "IMG") {
-            event.preventDefault();
-            alert("Arrastar imagens está desativado.");
-        }
-    });
-
-    // Bloqueia a seleção de texto (opcional)
-    document.addEventListener("selectstart", function (event) {
-        event.preventDefault();
-    });
-</script>

@@ -113,3 +113,4 @@ Route::prefix('admin')->group(function () {
     Route::get('/reset-password/{token}', [AdminPasswordResetController::class, 'showResetPasswordForm'])->name('password.reset'); // 🔹 Laravel precisa desse nome
     Route::post('/reset-password', [AdminPasswordResetController::class, 'resetPassword'])->name('admin.password.update');
 });
+

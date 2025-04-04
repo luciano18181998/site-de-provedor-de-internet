@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use App\Models\Fatura;
+use Illuminate\Support\Facades\Config;
 
 class SegundaViaController extends Controller
 {
     public function index()
     {
-        return view('segunda-via.index');
+        return view('segunda-via.index', ['appName' => Config::get('app.name')]);
     }
 
     public function consultar(Request $request)
@@ -44,6 +45,10 @@ class SegundaViaController extends Controller
             return redirect()->route('segunda-via.index')->with('error', 'Erro: O valor da fatura é inválido.');
         }
 
-        return view('segunda-via.fatura', compact('usuario', 'fatura'));
+        return view('segunda-via.fatura', [
+            'usuario' => $usuario,
+            'fatura' => $fatura,
+            'appName' => Config::get('app.name') // Passando appName para evitar erro na view
+        ]);
     }
 }

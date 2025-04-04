@@ -24,7 +24,7 @@
                 <li><a href="{{ route ('site.index') }}">Início</a></li>
                 <li><a href="{{ route ('planos.show') }}">Plano</a></li>
                 <li><a href="{{ route ('sobre') }}">Sobre</a></li>
-                <li><a href="#">Segunda via</a></li>
+                <li><a href="{{ route ('segunda-via.index') }}">Segunda via</a></li>
             </ul>
         </nav>
         <div class="btn-contato">
@@ -428,3 +428,40 @@ section.topo-do-site .flex{
 
 </body>
 </html>
+
+<script>
+    document.addEventListener("keydown", function (event) {
+        // Bloqueia Ctrl + U, Ctrl + Shift + I, Ctrl + C, Ctrl + X, Ctrl + S, F12 e outras teclas
+        if (
+            (event.ctrlKey && (event.key === "u" || event.key === "U")) || // Ctrl + U
+            (event.ctrlKey && (event.key === "i" || event.key === "I")) || // Ctrl + I
+            (event.ctrlKey && (event.shiftKey && (event.key === "i" || event.key === "I"))) || // Ctrl + Shift + I
+            (event.ctrlKey && (event.key === "c" || event.key === "C")) || // Ctrl + C
+            (event.ctrlKey && (event.key === "x" || event.key === "X")) || // Ctrl + X
+            (event.ctrlKey && (event.key === "s" || event.key === "S")) || // Ctrl + S
+            (event.key === "F12") // Tecla F12
+        ) {
+            event.preventDefault();
+            alert("Ação bloqueada!");
+        }
+    });
+
+    // Bloqueia o clique com o botão direito do mouse
+    document.addEventListener("contextmenu", function (event) {
+        event.preventDefault();
+        alert("O botão direito está desativado.");
+    });
+
+    // Bloqueia o arrastar de imagens (evita que sejam copiadas)
+    document.addEventListener("dragstart", function (event) {
+        if (event.target.tagName === "IMG") {
+            event.preventDefault();
+            alert("Arrastar imagens está desativado.");
+        }
+    });
+
+    // Bloqueia a seleção de texto (opcional)
+    document.addEventListener("selectstart", function (event) {
+        event.preventDefault();
+    });
+</script>
