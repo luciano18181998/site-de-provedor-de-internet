@@ -1,46 +1,143 @@
-## Como instalar
-
-Para instalar o projeto na sua VPS, execute os seguintes comandos:
-
-```bash
-wget https://raw.githubusercontent.com/luciano18181998/site-de-provedor-de-internet/main/install.sh
-chmod +x install.sh
-./install.sh
-
-
-Note que:
-
-- As três crases de abertura e fechamento **não podem ter espaços antes**.
-- A linha logo após as crases de abertura define a linguagem (neste caso, `bash`).
-
----
-
-### 2. Atualize e Confirme o README.md no Repositório
-
-Certifique-se de que o arquivo README.md está devidamente salvo e com o conteúdo atualizado no repositório. Você pode editar o arquivo diretamente pelo GitHub ou fazer commit localmente e enviar para o repositório.
-
----
-
-### 3. Visualize no GitHub
-
-Após atualizar o README.md, acesse a página do repositório pelo navegador. O GitHub renderiza automaticamente os blocos de código e exibe um botão “copy” (copiar) no canto superior direito do bloco.
-
----
-
-### 4. Exemplo Completo do README.md
-
-Aqui vai um exemplo completo do arquivo README.md que você pode usar:
-
-```markdown
 # Site de Provedor de Internet
 
-Este é um projeto para um site de provedor de internet.
+Este é um projeto Laravel para um site de provedor de internet.
 
-## Como instalar
+## Requisitos
 
-Para instalar o projeto na sua VPS, execute os seguintes comandos:
+- Servidor VPS rodando Ubuntu 20.04 ou superior
+- Acesso root ao servidor
+- Domínio apontado para o servidor (opcional, mas recomendado)
+
+## Etapas de Instalação
+
+### 1. Acesse sua VPS
+
+Conecte-se ao seu servidor via SSH:
 
 ```bash
-wget https://raw.githubusercontent.com/luciano18181998/site-de-provedor-de-internet/main/install.sh
+ssh root@IP_DA_SUA_VPS
+
+
+✅ Etapas completas para instalar seu site Laravel na VPS:
+🟩 ETAPA 1: Acesse sua VPS
+
+Use SSH:
+ssh root@IP_DA_SUA_VPS
+
+🟩 ETAPA 2: Prepare o ambiente da VPS
+Você precisa instalar tudo o que o Laravel precisa: PHP, MySQL, Nginx, Composer...
+
+Baixe e execute o script:
+wget https://SEU-LINK/setup-server.sh
+chmod +x setup-server.sh
+./setup-server.sh
+
+Esse script:
+
+Atualiza os pacotes
+
+Instala PHP 8.0 + extensões
+
+Instala MySQL Server
+
+Instala Nginx
+
+Instala Composer e Git
+
+🟩 ETAPA 3: Clone seu projeto Laravel
+Depois que o ambiente estiver pronto, baixe o projeto:
+
+cd /var/www
+git clone https://github.com/luciano18181998/site-de-provedor-de-internet.git
+cd site-de-provedor-de-internet
+
+🟩 ETAPA 4: Execute o instalador Laravel
+Esse script vai:
+
+Criar banco no MySQL
+
+Criar usuário e senha do banco
+
+Preencher o .env
+
+Instalar dependências
+
+Rodar php artisan migrate
+
+Criar o administrador
+
+Rode:
+
+wget https://SEU-LINK/install.sh
 chmod +x install.sh
 ./install.sh
+
+Durante o processo, ele vai perguntar:
+
+Nome do banco de dados
+
+Nome do usuário MySQL
+
+Senha do usuário
+
+Senha do MySQL root (para criar o banco)
+
+Informações do administrador do sistema
+
+🟩 ETAPA 5: Configure o Nginx
+Crie um arquivo em /etc/nginx/sites-available/laravel com este conteúdo:
+
+server {
+    listen 80;
+    server_name SEU_DOMINIO.com;
+
+    root /var/www/site-de-provedor-de-internet/public;
+
+    index index.php index.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.0-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+
+Depois, ative o site:
+
+ln -s /etc/nginx/sites-available/laravel /etc/nginx/sites-enabled/
+nginx -t
+systemctl reload nginx
+
+🟩 ETAPA 6: Permissões finais
+cd /var/www/site-de-provedor-de-internet
+chown -R www-data:www-data .
+chmod -R 775 storage
+chmod -R 775 bootstrap/cache
+
+🟩 ETAPA 7 (opcional): Configurar HTTPS com Certbot
+Se o domínio já estiver no ar e apontado pra VPS:
+
+apt install certbot python3-certbot-nginx -y
+certbot --nginx -d seu-dominio.com
+
+✅ Pronto!
+Seu projeto Laravel estará:
+
+Com MySQL funcionando
+
+.env configurado
+
+Admin cadastrado no banco
+
+Rodando no Nginx
+
+Com dependências instaladas
+
+
