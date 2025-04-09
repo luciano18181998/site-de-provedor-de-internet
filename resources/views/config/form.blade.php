@@ -133,10 +133,10 @@
         <a href="{{ route('admin.dashboard') }}">Dashboard</a>
         <a href="{{ route('usuarios.create') }}">Criar Usuário</a>
         <a href="{{ route('usuarios.index') }}">Gerenciar Usuários</a>
+        <a href="{{ route ('cobrancas.index') }}">Cobranças</a>
         <a href="{{ route('planos.index') }}">Planos</a>
         <a href="{{ route('regioes.index') }}">Regioes</a>
         <a href="{{ route('admin.lista') }}">Lista de Administradores</a>
-        <a href="{{ route ('config.save') }}">config</a>
     </div>
 
     <div class="main-content">

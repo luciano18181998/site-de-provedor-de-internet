@@ -107,7 +107,6 @@
         <a href="{{ route ('planos.index') }}">Planos</a>
         <a href="{{ route ('regioes.index') }}">Regiões</a>
         <a href="{{ route ('admin.lista') }}">Lista de Administradores</a>
-        <a href="{{ route ('config.save') }}">Config</a>
     </div>
     <div class="main-content">
         <div class="form-container">

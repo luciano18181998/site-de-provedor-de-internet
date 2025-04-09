@@ -14,7 +14,7 @@ class Fatura extends Model
     protected $fillable = [
         'usuario_id',
         'valor',
-        'data_vencimento',
+        'vencimento', // ✅ Corrigido: estava errado como "data_vencimento"
         'status'
     ];
 

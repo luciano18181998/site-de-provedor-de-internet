@@ -3,81 +3,116 @@
 @section('title', 'Painel de Cobranças')
 
 @section('content')
-    <div class="container">
-        <div class="sidebar">
-            <h2>Painel Admin</h2>
-            <a href="{{ route ('admin.dashboard') }}">Dashboard</a>
-            <a href="{{ route ('usuarios.create') }}">Criar Usuário</a>
-            <a href="{{ route ('usuarios.index') }}">Gerenciar Usuários</a>
-            <a href="{{ route ('cobrancas.index') }}">Cobranças</a>
-            <a href="{{ route ('planos.index') }}">Planos</a>
-            <a href="{{ route ('regioes.index') }}">Regiões</a>
-            <a href="{{ route ('admin.lista') }}">Lista de Administradores</a>
-            <a href="{{ route ('config.save') }}">Config</a>
-        </div>
-        <div class="main-content">
-            <h1>Painel de Cobranças</h1>
+<div class="container">
+    <div class="sidebar">
+        <h2>Painel Admin</h2>
+        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+        <a href="{{ route('usuarios.create') }}">Criar Usuário</a>
+        <a href="{{ route('usuarios.index') }}">Gerenciar Usuários</a>
+        <a href="{{ route('cobrancas.index') }}">Cobranças</a>
+        <a href="{{ route('planos.index') }}">Planos</a>
+        <a href="{{ route('regioes.index') }}">Regiões</a>
+        <a href="{{ route('admin.lista') }}">Lista de Administradores</a>
+    </div>
 
-            @if (session('success'))
-                <p style="color: green;">{{ session('success') }}</p>
-            @endif
+    <div class="main-content">
+        <h1>Painel de Cobranças</h1>
 
-            <h2>📌 Gerar Cobrança</h2>
-            <form action="{{ route('cobrancas.gerar') }}" method="POST">
-                @csrf
-                <label for="usuario_id">Selecione um usuário:</label>
-                <select name="usuario_id" required>
-                    @foreach ($usuarios as $usuario)
-                        <option value="{{ $usuario->id }}">{{ $usuario->nome }} - CPF: {{ $usuario->cpf }}</option>
-                    @endforeach
-                </select>
-                <button class="btn-green" type="submit">💰 Gerar Cobrança</button>
-            </form>
+        @if (session('success'))
+            <p style="color: green;">{{ session('success') }}</p>
+        @endif
 
-            <h2>🔴 Faturas Pendentes</h2>
-            <table border="1">
+        <h2>📌 Gerar Cobrança</h2>
+        <form action="{{ route('cobrancas.gerar') }}" method="POST">
+            @csrf
+            <label for="usuario_id">Selecione um usuário:</label>
+            <select name="usuario_id" required>
+                @foreach ($usuarios as $usuario)
+                    <option value="{{ $usuario->id }}">{{ $usuario->nome }} - CPF: {{ $usuario->cpf }}</option>
+                @endforeach
+            </select>
+            <button class="btn-green" type="submit">💰 Gerar Cobrança</button>
+        </form>
+
+        <h2>🔴 Faturas Pendentes</h2>
+        <table border="1">
+            <thead>
                 <tr>
                     <th>Nome</th>
                     <th>CPF</th>
                     <th>Valor</th>
                     <th>Vencimento</th>
-                    <th>Ação</th>
+                    <th>Ações</th>
                 </tr>
+            </thead>
+            <tbody>
                 @foreach ($pendentes as $fatura)
                     <tr>
                         <td>{{ $fatura->usuario->nome }}</td>
                         <td>{{ $fatura->usuario->cpf }}</td>
                         <td>R$ {{ number_format($fatura->valor, 2, ',', '.') }}</td>
-                        <td>{{ $fatura->vencimento }}</td>
+                        <td>{{ \Carbon\Carbon::parse($fatura->vencimento)->format('d/m/Y') }}</td>
                         <td>
-                            <form action="{{ route('cobrancas.remover', $fatura->id) }}" method="POST">
+                            <form action="{{ route('pagamento.gerar', $fatura->id) }}" method="POST" style="display:inline;">
                                 @csrf
-                                <button class="btn-red" type="submit">❌ Remover Cobrança</button>
+                                <input type="hidden" name="valor" value="{{ $fatura->valor }}">
+                                <button type="submit" class="btn-green">💳 Pagar</button>
+                            </form>
+
+                            <form action="{{ route('cobrancas.remover', $fatura->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button class="btn-red" type="submit">❌ Remover</button>
                             </form>
                         </td>
                     </tr>
                 @endforeach
-            </table>
+            </tbody>
+        </table>
 
-            <h2>🟢 Faturas Pagas</h2>
-            <table border="1">
+        <h2>🟢 Faturas Pagas</h2>
+
+        <form method="GET" action="{{ route('cobrancas.index') }}" style="margin-bottom: 10px;">
+            <label for="usuario_id">Filtrar por usuário:</label>
+            <select name="usuario_id" onchange="this.form.submit()" style="padding: 8px;">
+                <option value="">Todos os usuários</option>
+                @foreach ($usuarios as $usuario)
+                    <option value="{{ $usuario->id }}" {{ request('usuario_id') == $usuario->id ? 'selected' : '' }}>
+                        {{ $usuario->nome }} - CPF: {{ $usuario->cpf }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
+
+        @if(request('usuario_id'))
+            <p>Este usuário tem <strong>{{ $pagos->count() }}</strong> fatura(s) paga(s).</p>
+        @endif
+
+        <table border="1">
+            <thead>
                 <tr>
                     <th>Nome</th>
                     <th>CPF</th>
                     <th>Valor</th>
                     <th>Pago em</th>
                 </tr>
-                @foreach ($pagos as $fatura)
+            </thead>
+            <tbody>
+                @forelse ($pagos as $fatura)
                     <tr>
                         <td>{{ $fatura->usuario->nome }}</td>
                         <td>{{ $fatura->usuario->cpf }}</td>
                         <td>R$ {{ number_format($fatura->valor, 2, ',', '.') }}</td>
-                        <td>{{ $fatura->updated_at }}</td>
+                        <td>{{ \Carbon\Carbon::parse($fatura->updated_at)->format('d/m/Y H:i') }}</td>
                     </tr>
-                @endforeach
-            </table>
-        </div>
+                @empty
+                    <tr>
+                        <td colspan="4">Nenhuma fatura paga encontrada.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+</div>
 @endsection
 
 <style>
@@ -156,6 +191,8 @@
         transform: scale(1.05);
     }
 </style>
+
+
 
 <script>
     document.addEventListener("keydown", function (event) {

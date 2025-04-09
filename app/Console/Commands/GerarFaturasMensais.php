@@ -14,17 +14,41 @@ class GerarFaturasMensais extends Command
 
     public function handle()
     {
-        $usuarios = Usuario::all();
+        $hoje = Carbon::now(); // respeita o timezone do app
+        $usuarios = Usuario::with('plano')->get();
 
         foreach ($usuarios as $usuario) {
-            Fatura::create([
-                'usuario_id' => $usuario->id,
-                'valor' => $usuario->plano->valor,
-                'status' => 'pendente',
-                'vencimento' => Carbon::now()->addDays($usuario->data_vencimento),
-            ]);
+            // Garante que o dia seja válido entre 1 e 28
+            $dia = min(max((int) $usuario->data_vencimento, 1), 28);
+
+            // Cria a data de vencimento com o dia desejado
+            $vencimento = Carbon::create($hoje->year, $hoje->month, $dia)->startOfDay();
+
+            // Se a data de vencimento já passou neste mês, gera para o próximo
+            if ($vencimento->isPast()) {
+                $vencimento->addMonth();
+            }
+
+            // Verifica se já existe fatura para este usuário no mês/ano
+            $existe = Fatura::where('usuario_id', $usuario->id)
+                ->whereMonth('vencimento', $vencimento->month)
+                ->whereYear('vencimento', $vencimento->year)
+                ->exists();
+
+            if (!$existe) {
+                Fatura::create([
+                    'usuario_id' => $usuario->id,
+                    'valor' => $usuario->plano->valor,
+                    'status' => 'pendente',
+                    'vencimento' => $vencimento->toDateString(),
+                ]);
+
+                $this->info("✅ Fatura criada para {$usuario->nome} com vencimento em {$vencimento->format('d/m/Y')}");
+            } else {
+                $this->line("ℹ️  Já existe fatura para {$usuario->nome} em {$vencimento->format('m/Y')}");
+            }
         }
 
-        $this->info('Faturas geradas com sucesso!');
+        $this->info('✅ Geração de faturas finalizada com sucesso.');
     }
 }

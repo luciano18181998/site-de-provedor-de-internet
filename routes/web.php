@@ -101,7 +101,7 @@ Route::get('/cobranca', [CobrancaController::class, 'index'])->name('cobranca.in
 Route::post('/cobranca/gerar', [CobrancaController::class, 'gerar'])->name('cobranca.gerar');
 
 
-Route::post('/webhook/mercadopago', [MercadoPagoWebhookController::class, 'handle']);
+Route::post('/webhook/mercadopago', [PagamentoController::class, 'notificacao']);
 
 
 Route::prefix('admin')->group(function () {
@@ -113,4 +113,15 @@ Route::prefix('admin')->group(function () {
     Route::get('/reset-password/{token}', [AdminPasswordResetController::class, 'showResetPasswordForm'])->name('password.reset'); // 🔹 Laravel precisa desse nome
     Route::post('/reset-password', [AdminPasswordResetController::class, 'resetPassword'])->name('admin.password.update');
 });
+
+Route::post('/pagamento/gerar/{fatura_id}', [PagamentoController::class, 'gerar'])->name('pagamento.gerar');
+
+
+Route::post('/pagamento/{fatura_id}', [PagamentoController::class, 'gerar'])->name('pagamento.gerar');
+
+Route::post('/pagamento/boleto/{fatura_id}', [PagamentoController::class, 'gerarBoleto'])->name('pagamento.boleto');
+
+
+Route::post('/pagamento/notificacao', [PagamentoController::class, 'notificacao']);
+
 

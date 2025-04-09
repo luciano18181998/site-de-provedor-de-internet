@@ -116,7 +116,6 @@
         <a href="{{ route ('planos.index') }}">Planos</a>
         <a href="{{ route ('regioes.index') }}">Regioes</a>
         <a href="{{ route ('admin.lista') }}">Lista de Administradores</a>
-        <a href="{{ route ('config.save') }}">config</a>
     </div>
     <div class="main-content">
         <h1>Lista de Administradores</h1>

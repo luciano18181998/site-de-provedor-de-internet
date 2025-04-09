@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Http\Middleware;
 
@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        '/webhook/mercadopago',
     ];
 }
